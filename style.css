@@ -1,0 +1,495 @@
+/* ====================================================================
+   🌿 TEMA RURAL MODERNO — STYLE.CSS (v3.0)
+   ==================================================================== */
+
+/* --- VARIÁVEIS GLOBAIS --- */
+:root {
+    /* Cores personalizadas do seu tema verde */
+    --color-primary-green: #2f855a;
+    --color-secondary-green: #276749;
+
+    /* Cores Dark/Light Mode */
+    --bg-light: #f4fcf4;
+    /* Fundo claro para páginas sem imagem */
+    --bg-dark: #1a1a1a;
+    --card-bg-light: rgba(255, 255, 255, 0.6);
+    --card-bg-dark: rgba(30, 41, 59, 0.6);
+    --text-light: #2f3e46;
+    --text-dark: #e2e8f0;
+    --border-light: rgba(255, 255, 255, 0.25);
+    --border-dark: rgba(255, 255, 255, 0.15);
+}
+
+/* ====================================================================
+   ESTILOS GERAIS E ANIMAÇÃO (INDEX/USUARIO)
+   ==================================================================== */
+
+/* Fundo e corpo com imagem (body.bg-custom) */
+body.bg-custom {
+    /* 🎯 ALTERADO: Usando sua nova imagem de fundo */
+    background: url("./Gemini_Generated_Image_c855tgc855tgc855.png") no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    font-family: "Poppins", sans-serif;
+    color: var(--text-light);
+    transition: background 0.4s, color 0.4s, filter 0.4s;
+    animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Animação global */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Escurece levemente a imagem de fundo */
+body.bg-custom::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.25);
+    z-index: -1;
+    transition: background 0.4s;
+}
+
+/* Título principal */
+.titulo-principal {
+    color: var(--color-secondary-green);
+    font-weight: 700;
+    text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.3);
+    transition: color 0.4s, text-shadow 0.4s;
+}
+
+/* Container principal (para relatorio-produtor.html e relatorio.html) */
+body:not(.bg-custom):not(.login-body) {
+    background-color: var(--bg-light) !important;
+    color: var(--text-light) !important;
+}
+
+/* Containers internos (Para páginas com fundo simples) */
+.container.py-5 {
+    /* Mantido transparente, mas removi a regra que sobrescrevia a opacidade do seu container */
+    background: transparent !important;
+    opacity: 1 !important;
+}
+
+/* ====================================================================
+   🪟 CARDS (Glassmorphism Padrão)
+   ==================================================================== */
+.card {
+    border-radius: 18px;
+    border: 1px solid var(--border-light);
+    background: var(--card-bg-light);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 25px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease, background 0.5s;
+}
+
+.card:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateY(-2px);
+}
+
+/* Labels, Inputs e Selects */
+label {
+    color: var(--text-light);
+    font-weight: 500;
+    transition: color 0.4s;
+}
+
+select,
+input {
+    border-radius: 8px !important;
+    border: 1px solid #ced4da;
+    background: rgba(255, 255, 255, 0.7) !important;
+    /* Glass effect nos inputs */
+    transition: 0.2s;
+}
+
+select:focus,
+input:focus {
+    border-color: var(--color-primary-green);
+    box-shadow: 0 0 0 3px rgba(47, 133, 90, 0.25);
+    background: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* ====================================================================
+   🟩 BOTÕES
+   ==================================================================== */
+.btn-primary,
+.btn-success {
+    background-color: var(--color-primary-green) !important;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover,
+.btn-success:hover {
+    background-color: var(--color-secondary-green) !important;
+    transform: scale(1.03);
+}
+
+/* Botão PDF (Exportar) */
+#exportarPDF {
+    background-color: #c53030 !important;
+    border: none;
+    transition: all 0.3s;
+    color: white;
+}
+
+#exportarPDF:hover {
+    background-color: #9b2c2c !important;
+    transform: scale(1.03);
+}
+
+/* Botão remover produto */
+.remove-btn {
+    background-color: #e53e3e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.remove-btn:hover {
+    background-color: #c53030;
+    transform: scale(1.05) translateY(-50%);
+}
+
+.remove-btn i {
+    font-size: 1rem;
+}
+
+.produto-item {
+    position: relative;
+    padding-right: 40px;
+}
+
+.erro-msg {
+    font-size: 0.8rem;
+    margin-top: 4px;
+    color: #dc3545;
+}
+
+
+/* ====================================================================
+   📊 ESTILOS DE RELATÓRIO (relatorio-produtor.html & relatorio.html)
+   ==================================================================== */
+
+/* Status Cards (relatorio-produtor.html) */
+.status-card {
+    border-left-width: 5px;
+    border-left-style: solid;
+    transition: border-color 0.5s;
+    background: rgba(255, 255, 255, 0.7) !important;
+    /* Garante o Glassmorphism */
+}
+
+.status-Pendente {
+    border-color: #0d6efd !important;
+}
+
+.status-Em-andamento {
+    border-color: #ffc107 !important;
+}
+
+.status-Concluída {
+    border-color: var(--color-primary-green) !important;
+}
+
+.status-Cancelada {
+    border-color: #dc3545 !important;
+}
+
+/* Linha da Tabela de Relatórios */
+.table-hover tbody tr:hover {
+    cursor: pointer;
+    background-color: rgba(47, 133, 90, 0.1) !important;
+    /* Leve verde no hover */
+}
+
+.table-primary {
+    background-color: rgba(47, 133, 90, 0.25) !important;
+    /* Linha selecionada */
+}
+
+/* Cartão de Detalhes (relatorio.html) */
+.detail-card {
+    border-left: 5px solid var(--color-primary-green);
+    background: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Painel de Atualização de Status (relatorio.html) */
+.update-panel {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid #dcdcdc;
+    box-shadow: none;
+}
+
+
+/* ====================================================================
+   🧰 SELECT2 CUSTOMIZADO
+   ==================================================================== */
+.select2-container .select2-selection--single {
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s;
+}
+
+.select2-container .select2-selection--single:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.select2-selection__rendered {
+    color: var(--text-light) !important;
+    line-height: 38px !important;
+    padding-left: 12px !important;
+}
+
+.select2-selection__arrow {
+    height: 38px !important;
+}
+
+.select2-dropdown {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.select2-results__option {
+    color: var(--text-light);
+}
+
+.select2-results__option--highlighted {
+    background-color: var(--color-primary-green) !important;
+    color: white !important;
+}
+
+/* ====================================================================
+   🌙 DARK MODE
+   ==================================================================== */
+body.dark-mode {
+    background-color: var(--bg-dark) !important;
+    color: var(--text-dark) !important;
+}
+
+/* Fundo da imagem no Dark Mode */
+body.dark-mode.bg-custom::before {
+    background: rgba(0, 0, 0, 0.85);
+    /* Escurece mais o fundo */
+}
+
+body.dark-mode .titulo-principal {
+    color: #68d391;
+    text-shadow: 0 0 8px rgba(104, 211, 145, 0.5);
+}
+
+body.dark-mode .card {
+    background: var(--card-bg-dark);
+    border-color: var(--border-dark);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode label,
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3,
+body.dark-mode h4,
+body.dark-mode h5 {
+    color: var(--text-dark) !important;
+}
+
+/* Inputs e Selects no Dark Mode */
+body.dark-mode select,
+body.dark-mode input {
+    background: rgba(45, 55, 72, 0.7) !important;
+    color: var(--text-dark);
+    border: 1px solid #4a5568;
+}
+
+body.dark-mode select:focus,
+body.dark-mode input:focus {
+    background: rgba(45, 55, 72, 0.9) !important;
+    border-color: #68d391;
+    box-shadow: 0 0 0 3px rgba(104, 211, 145, 0.3);
+}
+
+/* Tabelas e Resultados no Dark Mode */
+body.dark-mode .table,
+body.dark-mode .table-striped>tbody>tr>td {
+    color: var(--text-dark);
+}
+
+body.dark-mode .table-striped>tbody>tr:nth-of-type(odd)>* {
+    background-color: rgba(45, 55, 72, 0.4) !important;
+}
+
+body.dark-mode .table-striped>tbody>tr:nth-of-type(even)>* {
+    background-color: rgba(45, 55, 72, 0.6) !important;
+}
+
+body.dark-mode .table-hover tbody tr:hover {
+    background-color: rgba(104, 211, 145, 0.2) !important;
+    /* Leve verde no hover escuro */
+}
+
+body.dark-mode .table-primary {
+    background-color: rgba(104, 211, 145, 0.4) !important;
+    /* Linha selecionada escuro */
+}
+
+body.dark-mode .update-panel {
+    background-color: rgba(45, 55, 72, 0.8) !important;
+    border: 1px solid #4a5568;
+}
+
+
+/* Select2 no Dark Mode */
+body.dark-mode .select2-container .select2-selection--single {
+    background: rgba(45, 55, 72, 0.8);
+    color: var(--text-dark);
+    border: 1px solid #4a5568;
+}
+
+body.dark-mode .select2-results__option {
+    background: #2d3748;
+    color: var(--text-dark);
+}
+
+body.dark-mode .select2-results__option--highlighted {
+    background-color: #38a169 !important;
+    color: #fff !important;
+}
+
+body.dark-mode .select2-dropdown {
+    background: rgba(45, 55, 72, 0.95);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+/* ====================================================================
+   🌗 BOTÃO DE MODO ESCURO
+   ==================================================================== */
+#darkModeToggle {
+    background-color: var(--color-primary-green);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 10px 12px;
+    font-size: 1.2rem;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+#darkModeToggle:hover {
+    background-color: var(--color-secondary-green);
+    transform: scale(1.15) rotate(5deg);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* ====================================================================
+   🔒 TELA DE LOGIN
+   ==================================================================== */
+/* Regra base do login (mantida para cor do texto e layout) */
+body.login-body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Removido o background-color daqui para evitar conflito na regra base */
+    padding: 20px;
+    color: var(--text-light);
+}
+
+/* Garante que a cor de fundo clara volte se o 'bg-custom' não estiver lá */
+body.login-body:not(.bg-custom) {
+    background-color: var(--bg-light);
+}
+
+/* Regra específica para o Dark Mode (mantém a cor escura) */
+body.dark-mode.login-body {
+    background-color: #2c3034 !important;
+}
+
+/* 💥 SOLUÇÃO ROBUSTA: Regra combinada para forçar o fundo de imagem no login! */
+body.login-body.bg-custom {
+    /* Usa a sintaxe completa para garantir que todas as partes sejam aplicadas. */
+    background-image: url("./Gemini_Generated_Image_c855tgc855tgc855.png") !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-attachment: fixed !important;
+    background-size: cover !important;
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* ... O restante do seu código de login segue ... */
+/* ====================================================================
+   📱 RESPONSIVIDADE
+   ==================================================================== */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px;
+    }
+
+    .produto-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .remove-btn {
+        position: static;
+        transform: none;
+        margin-top: 6px;
+    }
+
+    #darkModeToggle {
+        top: 15px;
+        right: 15px;
+        padding: 8px 10px;
+    }
+}
+
+/* Adicione esta regra ao seu bloco <style> */
+#verRelatoriosBtn {
+    position: fixed;
+    top: 15px;
+    /* Alinha com o botão Sair e Modo Escuro */
+    left: 15px;
+    /* Posição no canto superior esquerdo */
+    z-index: 9999;
+    /* Classes de botão Bootstrap para tamanho/cor */
+}
+
+/* Ajuste o título principal novamente, pois o botão fixo não o empurrará mais */
+.titulo-principal {
+    margin-top: 50px !important;
+    margin-bottom: 3rem !important;
+    /* Volta a margem normal */
+}

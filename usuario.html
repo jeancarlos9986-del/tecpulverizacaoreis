@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Pulverização - Aplicador</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script src="auth.js"></script>
+
+    <style>
+        /* Estilos CSS embutidos */
+        body {
+            /* Aumentando o padding superior para acomodar os botões fixos */
+            padding-top: 60px;
+        }
+
+        .table-bomba-picada th {
+            width: 50%;
+        }
+
+        /* Estilo para agrupar os botões fixos no topo */
+        .fixed-top-buttons {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        /* Estilo para o campo Responsável (read-only) */
+        .responsavel-card .form-control[readonly] {
+            background-color: #e9ecef !important;
+            /* Cor de fundo padrão cinza claro */
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Estilo para o botão de menu (apenas se for implementado, mas mantido como base de estilo) */
+        #menuToggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 9999;
+        }
+
+        /* Estilo para a imagem de exibição */
+        .relatorio-imagem {
+            max-height: 250px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        /* Estilo para a barra de progresso */
+        .progress-bar-animated {
+            animation: progress-bar-stripes 1s linear infinite;
+        }
+
+        @keyframes progress-bar-stripes {
+            0% {
+                background-position: 1rem 0;
+            }
+
+            100% {
+                background-position: 0 0;
+            }
+        }
+    </style>
+
+    <script>
+        // Lógica de autenticação e permissão (perfil aplicador)
+        const EXPECTED_ROLE = 'aplicador';
+        // NOTA: isUserLoggedIn, localStorage.getItem('user_role') e RESPONSAVEL_NOME_KEY
+        // são carregados via auth.js
+        if (typeof isUserLoggedIn !== 'function' || !isUserLoggedIn() || localStorage.getItem('user_role') !== EXPECTED_ROLE) {
+            alert('Acesso negado. Apenas o perfil Aplicador pode acessar esta página.');
+            window.location.href = "login.html";
+        }
+    </script>
+</head>
+
+<body class="bg-custom">
+    <div class="fixed-top-buttons">
+        <button id="exportPdfBtn" class="btn btn-sm btn-warning me-2" title="Exportar Relatório para PDF">
+            <i class="fas fa-file-pdf"></i> Exportar PDF
+        </button>
+        <button id="logoutBtn" class="btn btn-sm btn-danger" title="Sair do Sistema">
+            <i class="fas fa-sign-out-alt"></i> Sair
+        </button>
+    </div>
+
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">📄 Relatórios de Aplicação Pendentes</h2>
+
+        <div class="card shadow p-4 mb-4 responsavel-card">
+            <label for="responsavelInput" class="form-label fw-semibold">👨‍🌾 Aplicador/Responsável Técnico:</label>
+            <input type="text" id="responsavelInput" class="form-control" readonly />
+        </div>
+
+
+
+
+        <div id="reportContent">
+
+            <div id="alertaSemDados" class="alert alert-warning d-none" role="alert">
+                ⚠️ Nenhum relatório novo pendente de execução.
+            </div>
+
+            <div id="relatoriosContainer">
+            </div>
+
+        </div>
+    </div>
+
+    <footer style="text-align: center; padding: 10px; background-color: #f8f9fa; color: #555; font-size: 14px;">
+        © 2025 Tec Pulverização Reis — Desenvolvido por Jean Carlos. Todos os direitos reservados.
+    </footer>
+
+    <template id="relatorioTemplate">
+        <div class="card shadow-sm mb-4 relatorio-item" data-relatorio-id="">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-tractor"></i>
+                    <span class="relatorio-produtor"></span> - <span class="relatorio-area"></span>
+                </h5>
+                <span class="badge bg-light text-primary relatorio-status fw-bold"></span>
+            </div>
+
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Data Prevista:</strong> <span class="relatorio-data-prevista"></span>
+                        </p>
+                        <p class="mb-1"><strong>Área:</strong> <span class="relatorio-area-tamanho"></span> ha</p>
+                        <p class="mb-1"><strong>Pulverizador:</strong> <span class="relatorio-pulverizador"></span></p>
+                        <p class="mb-1"><strong>Vazão/Capacidade:</strong> <span
+                                class="relatorio-vazao-capacidade"></span></p>
+                    </div>
+                    <div class="col-md-6">
+                        <p class="mb-1"><strong>Clima Previsto:</strong> <span class="relatorio-clima-previsto"></span>
+                        </p>
+                        <p class="mb-1"><strong>Recomendação:</strong> <span
+                                class="relatorio-clima-recomendacao badge"></span></p>
+                        <p class="mb-1"><strong>Progresso:</strong> <span
+                                class="relatorio-progresso-texto fw-bold"></span></p>
+                        <div class="progress mt-1">
+                            <div class="relatorio-progresso-bar progress-bar progress-bar-animated" role="progressbar"
+                                style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-top pt-3 mt-3">
+                    <h6 class="fw-semibold text-primary">Produtos Planejados:</h6>
+                    <div class="relatorio-produtos-list">
+                    </div>
+                </div>
+
+                <div class="row mt-3 border-top pt-3">
+                    <div class="col-md-6 mb-3">
+                        <h6 class="fw-bold text-secondary">🖼️ Imagem Anexada:</h6>
+                        <img class="relatorio-imagem-salva relatorio-imagem img-fluid border" src=""
+                            alt="Imagem do Relatório" style="display: none;">
+                        <p class="relatorio-sem-imagem text-muted" style="display: none;">Nenhuma imagem anexada pelo
+                            Técnico.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="fw-bold text-secondary">📝 Observação do Técnico:</h6>
+                        <p class="relatorio-observacao-salva border p-2 bg-white rounded"
+                            style="min-height: 80px; white-space: pre-wrap; font-size: 0.9rem;">
+                        </p>
+                    </div>
+                </div>
+                <div class="border-top pt-3 mt-3">
+                    <h6 class="fw-semibold text-danger">Reporte de Campo:</h6>
+                    <label class="form-label">Status da Aplicação:</label>
+                    <select class="form-select mb-3 relatorio-status-select" disabled>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Em andamento">Em andamento</option>
+                        <option value="Concluída">Concluída</option>
+                    </select>
+
+                    <button class="btn btn-sm btn-info relatorio-update-btn d-none">Atualizar Status</button>
+                    <button class="btn btn-sm btn-success relatorio-concluir-btn d-none">Concluir Aplicação</button>
+                </div>
+
+            </div>
+        </div>
+    </template>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+    <script src="backend-simulado.js"></script>
+    <script src="exportPDF.js"></script>
+    <script src="usuario.js"></script>
+
+    <script>
+        const REPORT_CLIMA_KEY = 'REPORT_CLIMA';
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // ==========================================================
+            // LÓGICA 1: PREENCHER O RESPONSÁVEL/APLICADOR
+            // ==========================================================
+            const responsavelNome = localStorage.getItem(RESPONSAVEL_NOME_KEY);
+            const responsavelInput = document.getElementById('responsavelInput');
+
+            if (responsavelInput) {
+                if (responsavelNome) {
+                    responsavelInput.value = responsavelNome;
+                } else {
+                    responsavelInput.value = "Usuário não identificado. Faça login novamente.";
+                }
+            }
+            // ==========================================================
+
+            // ==========================================================
+            // LÓGICA 2: SALVAR CONDIÇÕES CLIMÁTICAS (Implementada)
+            // ==========================================================
+            const salvarCondicoesBtn = document.getElementById('salvarCondicoes');
+
+            if (salvarCondicoesBtn) {
+                salvarCondicoesBtn.addEventListener('click', () => {
+                    const vento = document.getElementById('velocidadeVento').value;
+                    const temperatura = document.getElementById('temperatura').value;
+                    const umidade = document.getElementById('umidadeRelativa').value;
+
+                    // Validação simples
+                    if (!vento || !temperatura || !umidade || parseFloat(vento) < 0 || parseFloat(temperatura) <= 0 || parseFloat(umidade) < 0 || parseFloat(umidade) > 100) {
+                        alert('⚠️ Por favor, preencha todos os campos climáticos com valores válidos.');
+                        return;
+                    }
+
+                    // Estrutura de dados a ser salva
+                    const dadosClimaticos = {
+                        velocidadeVento: parseFloat(vento).toFixed(1), // Formata para 1 casa decimal
+                        temperatura: parseFloat(temperatura).toFixed(1),
+                        umidadeRelativa: parseFloat(umidade).toFixed(1),
+                        dataHoraRegistro: new Date().toLocaleString('pt-BR')
+                    };
+
+                    // Salva no localStorage como JSON
+                    localStorage.setItem(REPORT_CLIMA_KEY, JSON.stringify(dadosClimaticos));
+
+                    alert('✅ Condições Climáticas de Campo salvas com sucesso! Pronto para anexar ao relatório.');
+                });
+            }
+
+            // ==========================================================
+            // Lógica de Logout
+            // ==========================================================
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn && typeof logout === 'function') {
+                logoutBtn.addEventListener('click', logout);
+            }
+        });
+    </script>
+</body>
+
+</html>
